@@ -4,7 +4,15 @@ const cheerio = require('cheerio');
 const LIST_URL = 'https://digital.nhs.uk/services/care-identity-service/applications-and-services/apply-for-care-id/care-identity-email-domain-allow-list';
 
 async function fetchPage() {
-  const res = await fetch(LIST_URL, { headers: { 'User-Agent': 'allowed-domain-api/0.1' } });
+  const res = await fetch(LIST_URL, {
+    headers: {
+      // NHS site can block non-browser UAs; use a common browser UA + basic headers.
+      'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'Accept-Language': 'en-GB,en;q=0.9',
+      'Referer': 'https://digital.nhs.uk/'
+    }
+  });
   if (!res.ok) throw new Error('Failed to fetch list: ' + res.status);
   return res.text();
 }
